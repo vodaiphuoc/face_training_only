@@ -13,8 +13,8 @@ from copy import deepcopy
 from tqdm import tqdm
 import cv2 as cv
 import json
-from src.server.models.Facenet_pytorch.utils.fine_tuning_utils import TripLetDataset_V2, CustomeTripletLoss
-from src.server.models.Facenet_pytorch.inception_resnet_v1 import InceptionResnetV1
+from src.server.Facenet_pytorch.utils.fine_tuning_utils import TripLetDataset_V2, CustomeTripletLoss
+from src.server.Facenet_pytorch.inception_resnet_v1 import InceptionResnetV1
 
 import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
