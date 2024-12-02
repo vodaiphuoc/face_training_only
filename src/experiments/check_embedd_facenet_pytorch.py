@@ -113,7 +113,7 @@ class Test_Embeddings(object):
 
 				# compute score over all training data
 				score_dict = {
-					user_dict: get_cosim(user_dict['embeddings'], embedding).item()
+					user_dict['user_name']: get_cosim(user_dict['embeddings'], embedding).item()
 					for user_dict in master_init_data
 				}
 				# sort score dict in ascending order
