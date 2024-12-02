@@ -7,8 +7,11 @@ from tqdm import tqdm
 import cv2 as cv
 import json
 import logging
-from src.server.Facenet_pytorch.mtcnn import fixed_image_standardization
 
+
+def fixed_image_standardization(image_tensor):
+    processed_tensor = (image_tensor - 127.5) / 128.0
+    return processed_tensor
 
 class TripLetDataset_V2(torch.utils.data.Dataset):
 	"""For train dataset, all data, 
