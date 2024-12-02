@@ -20,8 +20,7 @@ class TripLetDataset_V2(torch.utils.data.Dataset):
 				data_folder_path:str = 'face_dataset\\faces_only', 
 				number_other_users:int = 3,
 				p_n_ratio = 4,
-				number_celeb_in_train:int = 500,
-				number_celeb_in_val:int = 150
+				number_celeb_in_train:int = 500
 				)->None:
 
 		(
@@ -31,8 +30,7 @@ class TripLetDataset_V2(torch.utils.data.Dataset):
 		) = TripLetDataset_V2._make_index_list(is_train = is_train,
 											data_folder_path = data_folder_path, 
 											number_other_users = number_other_users,
-											number_celeb_in_train = number_celeb_in_train,
-											number_celeb_in_val = number_celeb_in_val
+											number_celeb_in_train = number_celeb_in_train
 											)
 		self.data_folder_path = data_folder_path
 		self.return_examples = return_examples
@@ -44,8 +42,7 @@ class TripLetDataset_V2(torch.utils.data.Dataset):
 	def _make_index_list(is_train: bool,
 						data_folder_path: str,
 						number_other_users: int = 3,
-						number_celeb_in_train: int = 500,
-						number_celeb_in_val: int = 150
+						number_celeb_in_train: int = 500
 						)->Tuple[List[str], \
 								List[Dict[str, Union[int, List[int]]]], \
 								List[Dict[str, List[str]]] \
@@ -60,9 +57,10 @@ class TripLetDataset_V2(torch.utils.data.Dataset):
 				json.dump([{ith:ele} for ith, ele in enumerate(glob_iter)], f, indent = 4)
 
 		else:
-			glob_iter = glob.glob("*_*",root_dir = f"{data_folder_path}") # + \
-						# glob.glob("[0-9]*", root_dir = f"{data_folder_path}")[:number_celeb_in_val]
-
+			glob_iter = glob.glob("*_*",root_dir = f"{data_folder_path}")  + \
+						random.sample(glob.glob("[0-9]*", root_dir = f"{data_folder_path}"), 
+									k = number_celeb_in_train)
+		
 		# MAIN DIFFERENCE IN V2
 		# user maps to other users
 		# this is main index for iterator
