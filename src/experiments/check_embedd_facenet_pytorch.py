@@ -107,6 +107,9 @@ class Test_Embeddings(object):
 			user_embeddings_dict = self._run_single_user(user_name = user_name)
 
 			user_accuracy = 0
+			result[user_name] = {}
+
+			pred_user_list = []
 			# loop through each embedding
 			for embedding in user_embeddings_dict['embeddings']:
 				embedding = torch.unsqueeze(embedding, dim = 0)
@@ -122,15 +125,17 @@ class Test_Embeddings(object):
 				pred_name = list(score_dict.keys())[-1]
 				if pred_name == user_name:
 					user_accuracy += 1
+				pred_user_list.append(pred_name)
 
 			user_accuracy = user_accuracy/len(user_embeddings_dict['embeddings'])
 
-			result[user_name] = user_accuracy
+			result[user_name]['mean_accuracy'] = user_accuracy
+			result[user_name]['pred_user_list'] = pred_user_list
 
 		print(result)
 
 		total_mean_acc = 0.0
 		for k,v in result.items():
-			total_mean_acc += v
+			total_mean_acc += v['mean_accuracy']
 
 		print('Total mean accuracy: ', total_mean_acc/len(result))
