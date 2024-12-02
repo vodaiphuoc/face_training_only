@@ -7,7 +7,7 @@ from tqdm import tqdm
 import cv2 as cv
 import json
 import logging
-from src.server.models.Facenet_pytorch.mtcnn import fixed_image_standardization
+from src.server.Facenet_pytorch.mtcnn import fixed_image_standardization
 
 
 class TripLetDataset_V2(torch.utils.data.Dataset):
