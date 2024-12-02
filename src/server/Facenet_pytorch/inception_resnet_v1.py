@@ -6,9 +6,6 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
-from .utils.download import download_url_to_file
-
-
 class BasicConv2d(nn.Module):
 
     def __init__(self, in_planes, out_planes, kernel_size, stride, padding=0):
@@ -330,13 +327,6 @@ def load_weights(mdl, name, pretrained_weight_dir, device):
         _path = pretrained_weight_dir+"/fine_tuning.pt"
     else:
         raise ValueError('Pretrained models only exist for "vggface2" and "casia-webface"')
-
-    # model_dir = os.path.join(get_torch_home(), 'checkpoints')
-    # os.makedirs(model_dir, exist_ok=True)
-
-    # cached_file = os.path.join(model_dir, os.path.basename(path))
-    # if not os.path.exists(cached_file):
-    #     download_url_to_file(path, cached_file)
     
     load_state_dict = torch.load(_path, 
         weights_only = True, 
