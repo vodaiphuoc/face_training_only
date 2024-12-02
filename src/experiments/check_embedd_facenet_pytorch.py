@@ -1,21 +1,6 @@
-# self.detector = MTCNN(image_size=160, 
-        #             margin=0, 
-        #             min_face_size=20,
-        #             thresholds=[0.6, 0.7, 0.7], 
-        #             factor=0.709, 
-        #             post_process=True,
-        #             select_largest=True, 
-        #             selection_method=None, 
-        #             keep_all=True,
-        #             device=self.device,
-        #             p_state_dict_path = p_state_dict_path,
-        #             r_state_dict_path = r_state_dict_path,
-        #             o_state_dict_path = o_state_dict_path,
-        #             )
-from src.server.models.Facenet_pytorch.mtcnn import MTCNN, fixed_image_standardization
-from src.server.models.Facenet_pytorch.inception_resnet_v1 import InceptionResnetV1
-from src.mongodb import Mongo_Handler
-from src.utils import get_program_config
+from src.server.Facenet_pytorch.utils.fine_tuning_utils import fixed_image_standardization
+from src.server.Facenet_pytorch.inception_resnet_v1 import InceptionResnetV1
+
 import cv2 as cv
 from typing import List, Literal
 import numpy as np
@@ -113,28 +98,39 @@ class Test_Embeddings(object):
 		return master_init_data
 	
 
-	def pipelines(self, 
-				run_init_push: bool, 
-				evaluation: bool
-				):
-		master_config = get_program_config()
+	def pipelines(self):
 		master_init_data = self._get_total_init_user_data()
-		# print('number init data: ',len(master_init_data))
+				
+		result = {}
+		for main_user_dir in glob.glob(f"{self.data_folder_path}/*_*"):
+			user_name = os.path.split(main_user_dir)[-1].split('.')[0]
+			user_embeddings_dict = self._run_single_user(user_name = user_name)
 
-		if run_init_push:
-			db_engine = Mongo_Handler(master_config= master_config,
-						ini_push= True,
-						init_data= master_init_data)
-		
-		if evaluation:
-			# db_engine = Mongo_Handler(master_config= master_config,
-			# 			ini_push= False)
+			user_accuracy = 0
+			# loop through each embedding
+			for embedding in user_embeddings_dict['embeddings']:
+				embedding = torch.unsqueeze(embedding, dim = 0)
 
-			result = {}
-			for main_user_dir in glob.glob(f"{self.data_folder_path}/*_*"):
-				user_name = os.path.split(main_user_dir)[-1].split('.')[0]
-				user_embeddings_dict = self._run_single_user(user_name = user_name)
+				# compute score over all training data
+				score_dict = {
+					user_dict: get_cosim(user_dict['embeddings'], embedding).item()
+					for user_dict in master_init_data
+				}
+				# sort score dict in ascending order
+				score_dict = {k: v for k, v in sorted(score_dict.items(), key=lambda item: item[1])}
 
-				result[user_name] = db_engine.searchUserWithEmbeddings_V2(user_embeddings_dict['embeddings'].cpu())
+				pred_name = list(score_dict.keys())[-1]
+				if pred_name == user_name:
+					user_accuracy += 1
 
-			print(result)
+			user_accuracy = user_accuracy/len(user_embeddings_dict['embeddings'])
+
+			result[user_name] = user_accuracy
+
+		print(result)
+
+		total_mean_acc = 0.0
+		for k,v in result.items():
+			total_mean_acc += v
+
+		print('Total mean accuracy: ', total_mean_acc/len(result))
