@@ -14,7 +14,7 @@ import json
 import time
 
 
-@torch.compile(fullgraph = True, dynamic = False, mode = 'reduce-overhead')
+# @torch.compile(fullgraph = True, dynamic = False, mode = 'reduce-overhead')
 def get_cosim(input1:torch.Tensor, input2:torch.Tensor)->float:
 	"""
 	input1,input2: torch.Tensor shape (B_{i}, 512)
