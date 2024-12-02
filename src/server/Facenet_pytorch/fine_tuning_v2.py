@@ -61,7 +61,6 @@ class FineTuner(object):
 				number_other_users:float = 0.2,
 				p_n_ratio:int = 4,
 				number_celeb_in_train:int = 500,
-				number_celeb_in_val:int = 150,
 				batch_size:int = 64,
 				num_workers:int = 2
 				):
@@ -77,7 +76,6 @@ class FineTuner(object):
 			'number_other_users': number_other_users,
 			'p_n_ratio': p_n_ratio,
 			'number_celeb_in_train': number_celeb_in_train,
-			'number_celeb_in_val': number_celeb_in_val,
 			'batch_size': batch_size,
 			'num_workers': num_workers
 		}
@@ -149,7 +147,6 @@ class FineTuner(object):
 					number_other_users:float,
 					p_n_ratio: int,
 					number_celeb_in_train:int,
-					number_celeb_in_val:int,
 					batch_size:int,
 					num_workers:int
 					):
@@ -158,8 +155,7 @@ class FineTuner(object):
 								data_folder_path = data_folder_path,
 								number_other_users = number_other_users,
 								p_n_ratio = p_n_ratio,
-								number_celeb_in_train = number_celeb_in_train,
-								number_celeb_in_val = number_celeb_in_val
+								number_celeb_in_train = number_celeb_in_train
 		)
 		sampler = DistributedSampler(dataset, 
 									rank=rank, 
